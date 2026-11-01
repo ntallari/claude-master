@@ -1,0 +1,32 @@
+{
+  "$comment": "Conservative example. Copy into target repos as .claude/settings.json (or merge into ~/.claude/settings.json). Verify keys/matcher syntax against your Claude Code version's docs.",
+  "permissions": {
+    "allow": [
+      "Read", "Grep", "Glob", "Edit", "Write",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)",
+      "Bash(git add:*)", "Bash(git commit:*)", "Bash(git checkout -b claude/*)",
+      "Bash(pytest:*)", "Bash(python:*)", "Bash(make test:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)", "Bash(git merge:*)", "Bash(git rebase:*)", "Bash(git reset --hard:*)",
+      "Bash(git checkout main:*)", "Bash(git checkout master:*)", "Bash(git branch -D:*)",
+      "Bash(rm -rf:*)", "Bash(sudo:*)",
+      "Bash(curl:*)", "Bash(wget:*)", "Bash(scp:*)", "Bash(rsync:*)", "Bash(ssh:*)",
+      "WebFetch", "WebSearch",
+      "Read(./.env)", "Read(./.env.*)", "Read(**/secrets/**)", "Read(**/*.pem)", "Read(**/*.key)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import sys,json; c=json.load(sys.stdin).get('tool_input',{}).get('command',''); bad=[w for w in ('git push','--force','rm -rf','git merge','checkout main','checkout master','reset --hard') if w in c]; (print('Blocked by claude-master hook: '+','.join(bad), file=sys.stderr), sys.exit(2)) if bad else sys.exit(0)\""
+          }
+        ]
+      }
+    ]
+  }
+}
