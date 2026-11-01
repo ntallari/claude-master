@@ -1,0 +1,13 @@
+# systemd user unit. Install: cp cron/claude-master.* ~/.config/systemd/user/
+# systemctl --user daemon-reload && systemctl --user enable --now claude-master.timer
+# loginctl enable-linger $USER   # so it runs when you're logged out
+[Unit]
+Description=claude-master nightly task runner
+
+[Service]
+Type=oneshot
+WorkingDirectory=<MASTER_REPO_PATH>
+Environment=PATH=<HOME>/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/usr/bin/python3 scripts/run_tasks.py --schedule nightly --limit 3
+ExecStartPost=/usr/bin/python3 scripts/run_tasks.py --schedule once --limit 2
+TimeoutStartSec=4h

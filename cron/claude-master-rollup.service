@@ -1,0 +1,6 @@
+[Unit]
+Description=claude-master morning rollup
+[Service]
+Type=oneshot
+WorkingDirectory=<MASTER_REPO_PATH>
+ExecStart=/usr/bin/python3 scripts/morning_rollup.py

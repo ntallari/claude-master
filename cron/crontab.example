@@ -1,0 +1,15 @@
+# Install with: crontab -e   (paste, then fix paths). Times are local machine time.
+# cron has a minimal environment: set PATH so `claude`, `git`, `python3` resolve,
+# and make sure Claude Code auth works non-interactively (see docs/GUIDE.md "Auth in cron").
+SHELL=/bin/bash
+PATH=<HOME>/.local/bin:<HOME>/.npm-global/bin:/usr/local/bin:/usr/bin:/bin
+MASTER=<MASTER_REPO_PATH>
+
+# Nightly tasks at 01:30, up to 3 tasks
+30 1 * * *  cd $MASTER && python3 scripts/run_tasks.py --schedule nightly --limit 3 >> logs/cron.log 2>&1
+# Weekly tasks Monday 02:30 (task frontmatter weekday: mon)
+30 2 * * 1  cd $MASTER && python3 scripts/run_tasks.py --schedule weekly --limit 2 >> logs/cron.log 2>&1
+# One-off queued tasks at 03:30
+30 3 * * *  cd $MASTER && python3 scripts/run_tasks.py --schedule once --limit 2 >> logs/cron.log 2>&1
+# Morning rollup at 06:00 (summarizes yesterday's reports)
+0 6 * * *   cd $MASTER && python3 scripts/morning_rollup.py >> logs/cron.log 2>&1
