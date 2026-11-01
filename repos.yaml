@@ -1,0 +1,41 @@
+# Registry of active repos. The runner only touches repos listed here with enabled: true.
+# Replace every <PLACEHOLDER>. Paths must be absolute local clones.
+defaults:
+  model: sonnet            # alias passed to `claude --model`; verify with `claude --help`
+  max_turns: 30
+  timeout_minutes: 45
+  allowed_tools: "Read,Edit,Write,Grep,Glob,Bash(git status:*),Bash(git diff:*),Bash(git add:*),Bash(git commit:*),Bash(git log:*),Bash(python:*),Bash(pytest:*),Bash(make:*)"
+
+repos:
+  ad-perf-sim:
+    path: <REPO_PATH_AD_PERF_SIM>          # e.g. /home/nick/src/ad-perf-sim
+    purpose: AD system performance simulation (engagement timelines, Pk, latency budgets)
+    default_branch: main
+    test_command: "pytest -q tests"
+    sim_command: "<SIM_COMMAND e.g. python -m sim.run --config configs/baseline.yaml --out results/>"
+    memory_docs: [CLAUDE.md, docs/LEARNINGS.md]   # Nick's existing memory files in this repo
+    goals:
+      - Keep baseline scenario metrics within tolerance of last accepted run
+    notes: Long sims; prefer the reduced Monte Carlo config for nightly runs.
+    enabled: true
+
+  flight-data-analysis:
+    path: <REPO_PATH_FLIGHT_DATA>
+    purpose: Test/flight data ingestion and analysis notebooks + library
+    default_branch: main
+    test_command: "pytest -q"
+    memory_docs: [CLAUDE.md, MEMORY.md]
+    goals:
+      - Keep ingestion parsers passing on the sample datasets
+    notes: Never read raw controlled datasets; use data/samples only.
+    enabled: true
+
+  sim-tools:
+    path: <REPO_PATH_SIM_TOOLS>
+    purpose: Shared plotting / stats utilities
+    default_branch: main
+    test_command: "make test"
+    memory_docs: [CLAUDE.md]
+    goals: []
+    notes: Example of a disabled repo.
+    enabled: false
